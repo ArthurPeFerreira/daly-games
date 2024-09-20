@@ -1,101 +1,72 @@
-import Image from "next/image";
+import { BsArrowRightSquare } from "react-icons/bs";
+import GameType from "@/util/types/Game";
+import Link from "next/link";
+import { Input } from "../components/Input";
+import { GameCard } from "../components/GameCard";
 
-export default function Home() {
+async function getDalyGame() {
+  try {
+    const res = await fetch(
+      "https://sujeitoprogramador.com/next-api/?api=game_day",
+      { next: { revalidate: 320 } }
+    );
+    return res.json();
+  } catch (err) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+async function getGamesData() {
+  try {
+    const res = await fetch(
+      "https://sujeitoprogramador.com/next-api/?api=games",
+      { next: { revalidate: 320 } }
+    );
+    return res.json();
+  } catch (err) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+export default async function Home() {
+  const jogo_escolhido: GameType = await getDalyGame();
+  const jogos: GameType[] = await getGamesData();
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="w-full px-2 pt-2">
+      <div className="max-w-screen-lg mx-auto flex flex-col items-center">
+        <h1 className="text-center font-bold text-xl mt-8 mb-5">
+          Separamos um jogo exclusivo pra você
+        </h1>
+        <Link href={`/game/${jogo_escolhido.id}`}>
+          <section className="w-full max-w-screen-lg bg-black rounded-lg">
+            <div className="w-full max-w-screen-lg max-h-96 h-96 relative rounded-lg">
+              <div className="absolute z-20 bottom-0 p-3 flex justify-center items-center gap-2">
+                <p className="font-bold text-xl text-white">
+                  {jogo_escolhido.title}
+                </p>
+                <BsArrowRightSquare size={24} color="#FFF" />
+              </div>
+              <img
+                src={jogo_escolhido.image_url}
+                alt={jogo_escolhido.title}
+                className="max-h-96 object-cover w-full rounded-lg opacity-50 hover:opacity-100 transition-all duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 44vw"
+              />
+            </div>
+          </section>
+        </Link>
+        <Input />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div>
+          <h2 className="text-lg font-bold mt-2 mb-5">Jogos para conhecer</h2>
+          <section className="grid gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {jogos.map((jogo) => (
+              <GameCard key={jogo.id} data={jogo} />
+            ))}
+          </section>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
